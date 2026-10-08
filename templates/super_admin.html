@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guester - Sistem Yönetim Paneli</title>
+    <link rel="icon" type="image/jpeg" href="{{ url_for('static', filename='images/logo.jpeg') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    {% if login_mod %}
+    <!-- ========================================== -->
+    <!--          LOGIN MOD (GİRİŞ EKRANI)          -->
+    <!-- ========================================== -->
+    <div class="flex-1 flex items-center justify-center p-4">
+        <div class="glass w-full max-w-md rounded-2xl p-8 shadow-2xl relative overflow-hidden">
+            <!-- Decorative Background Glow -->
+            <div class="absolute -top-10 -right-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl"></div>
+
+            <div class="text-center mb-8 relative z-10">
+                <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Guester Logo" class="w-16 h-16 mx-auto rounded-xl shadow-md border border-white/10 mb-4 object-cover">
+                <h1 class="text-2xl font-bold tracking-tight text-white mb-2">Sistem Yönetim Paneli</h1>
+                <p class="text-slate-400 text-sm">Guester Sistem Yöneticisi Girişi</p>
+            </div>
+
+            {% if error %}
+            <div class="bg-red-500/15 border border-red-500/30 text-red-300 text-sm rounded-lg p-3 mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-circle-exclamation text-base"></i>
+                <span>Giriş bilgileri hatalı veya eksik.</span>
+            </div>
+            {% endif %}
+
+            <form action="/super_admin/login" method="POST" onsubmit="sessionStorage.setItem('admin_session_active', 'true');" class="space-y-5 relative z-10">
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-1.5" for="username">Yönetici Adı</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </span>
+                        <input type="text" name="username" id="username" required placeholder="Kullanıcı Adı"
+                            class="w-full bg-slate-900/50 border border-slate-700/60 rounded-lg pl-10 pr-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-1.5" for="password">Şifre</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-400">
+                            <i class="fa-solid fa-lock"></i>
+                        </span>
+                        <input type="password" name="password" id="password" required placeholder="••••••••"
+                            class="w-full bg-slate-900/50 border border-slate-700/60 rounded-lg pl-10 pr-4 py-2.5 text-white placeholder-slate-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all text-sm">
+                    </div>
+                </div>
+
+                <button type="submit"
+                    class="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium py-2.5 rounded-lg transition-all shadow-lg hover:shadow-purple-500/20 active:scale-[0.98] text-sm mt-2">
+                    Sistem Paneline Giriş Yap
+                </button>
+            </form>
+        </div>
+    </div>
+    {% else %}
+    <!-- ========================================== -->
+    <!--       DASHBOARD MOD (YÖNETİM PANELİ)       -->
+    <!-- ========================================== -->
+    
+    <!-- Navbar -->
+    <header class="glass sticky top-0 z-40 border-b border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <img src="{{ url_for('static', filename='images/logo.jpeg') }}" alt="Guester Logo" class="w-9 h-9 rounded-lg border border-white/10 object-cover">
+                <span class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+                    Guester <span class="bg-purple-500/10 text-purple-300 text-xs px-2 py-0.5 rounded-full border border-purple-500/20 font-medium">Sistem Admin</span>
+                </span>
+            </div>
+            <a href="/super_admin/logout" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700/80 text-slate-300 text-sm font-medium px-4 py-2 rounded-lg border border-white/5 transition-all">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i> Güvenli Çıkış
+            </a>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <!-- Dashboard Header -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div>
+                <h2 class="text-2xl md:text-3xl font-extrabold text-white">Sistem Genel Kontrolü</h2>
+                <p class="text-slate-400 text-sm mt-1">Platformdaki tüm kullanıcı hesaplarını, etkinlikleri ve misafirleri yönetin.</p>
+            </div>
+            <div class="text-sm text-slate-400 bg-slate-900/60 border border-white/5 px-4 py-2 rounded-lg">
+                <span class="font-medium text-slate-300">Giriş Yetkisi:</span> Sistem Yöneticisi
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        {% if success %}
+        <div class="bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-sm rounded-xl p-4 mb-8 flex items-center gap-2">
+            <i class="fa-solid fa-circle-check text-lg"></i>
+            <span>
+                {% if success == 'user_updated' %}Kullanıcı bilgileri başarıyla güncellendi.{% endif %}
+                {% if success == 'user_deleted' %}Kullanıcı hesabı ve bağlı tüm veriler başarıyla silindi.{% endif %}
+            </span>
+        </div>
+        {% endif %}
+        
+        {% if error %}
+        <div class="bg-red-500/15 border border-red-500/30 text-red-300 text-sm rounded-xl p-4 mb-8 flex items-center gap-2">
+            <i class="fa-solid fa-circle-exclamation text-lg"></i>
+            <span>
+                {% if error == 'missing_fields' %}Lütfen zorunlu alanları doldurun.{% endif %}
+                {% if error == 'email_exists' %}Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor.{% endif %}
+                {% if error.startswith('db_error') %}Veritabanı hatası oluştu: {{ error }}{% endif %}
+            </span>
+        </div>
+        {% endif %}
+
+        <!-- Stat Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+            <div class="glass p-6 rounded-2xl flex items-center justify-between shadow-xl relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-purple-500/5 rounded-full blur-2xl"></div>
+                <div>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">Toplam Kullanıcı</span>
+                    <span class="text-3xl font-extrabold text-white">{{ total_users }}</span>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 text-xl shadow-inner">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+            </div>
+
+            <div class="glass p-6 rounded-2xl flex items-center justify-between shadow-xl relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-indigo-500/5 rounded-full blur-2xl"></div>
+                <div>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">Toplam Etkinlik / Davetiye</span>
+                    <span class="text-3xl font-extrabold text-white">{{ total_events }}</span>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-xl shadow-inner">
+                    <i class="fa-solid fa-envelope-open-text"></i>
+                </div>
+            </div>
+
+            <div class="glass p-6 rounded-2xl flex items-center justify-between shadow-xl relative overflow-hidden">
+                <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-pink-500/5 rounded-full blur-2xl"></div>
+                <div>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 block mb-1">Toplam Davetli Listesi</span>
+                    <span class="text-3xl font-extrabold text-white">{{ total_guests }}</span>
+                </div>
+                <div class="w-12 h-12 rounded-xl bg-pink-500/10 border border-pink-500/20 flex items-center justify-center text-pink-400 text-xl shadow-inner">
+                    <i class="fa-solid fa-clipboard-user"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Table Card -->
+        <div class="glass rounded-2xl shadow-xl overflow-hidden">
+            <div class="px-6 py-5 border-b border-white/5 flex items-center justify-between bg-slate-800/40">
+                <h3 class="font-bold text-lg text-white">Sisteme Kayıtlı Kullanıcılar</h3>
+                <span class="bg-slate-900/80 text-slate-400 text-xs px-3 py-1 rounded-full border border-white/5 font-medium">Toplam: {{ kullanicilar|length }}</span>
+            </div>
+
+            <div class="overflow-x-auto w-full">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-slate-800/20 border-b border-white/5 text-slate-400 text-xs font-semibold uppercase tracking-wider">
+                            <th class="px-6 py-4">NO</th>
+                            <th class="px-6 py-4">Ad Soyad</th>
+                            <th class="px-6 py-4">İşletme Adı</th>
+                            <th class="px-6 py-4">E-posta</th>
+                            <th class="px-6 py-4">Şifre</th>
+                            <th class="px-6 py-4">Kayıt Tarihi</th>
+                            <th class="px-6 py-4 text-center">Davetiye S.</th>
+                            <th class="px-6 py-4 text-right">İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-white/5 text-sm text-slate-300">
+                        {% for k in kullanicilar %}
+                        <tr class="hover:bg-white/[0.02] transition-colors">
+                            <td class="px-6 py-4 font-mono text-slate-500">#{{ loop.index }}</td>
+                            <td class="px-6 py-4 font-semibold text-white">{{ k.ad_soyad }}</td>
+                            <td class="px-6 py-4 text-slate-400">{{ k.isletme_adi or '-' }}</td>
+                            <td class="px-6 py-4 font-mono text-slate-400">{{ k.email }}</td>
+                            <td class="px-6 py-4">
+                                <span class="bg-slate-900/60 border border-white/5 px-2.5 py-1 rounded text-xs font-mono select-all text-purple-300">
+                                    {{ k.sifre }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-slate-400 text-xs">{{ k.olusturma_tarihi }}</td>
+                            <td class="px-6 py-4 text-center">
+                                <span class="bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 text-xs font-bold px-2 py-0.5 rounded-full">
+                                    {{ k.davetiye_sayisi }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right whitespace-nowrap">
+                                <div class="inline-flex gap-2">
+                                    <button onclick="openEditModal({{ k.id }}, '{{ k.ad_soyad|escape }}', '{{ k.email|escape }}', '{{ k.isletme_adi|escape }}', '{{ k.sifre|escape }}')"
+                                        class="bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-xs font-medium px-3 py-1.5 rounded-lg border border-blue-500/20 transition-all flex items-center gap-1.5">
+                                        <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                    </button>
+                                    <button onclick="openDeleteModal({{ k.id }}, '{{ k.ad_soyad|escape }}')"
+                                        class="bg-red-500/10 hover:bg-red-500/20 text-red-400 text-xs font-medium px-3 py-1.5 rounded-lg border border-red-500/20 transition-all flex items-center gap-1.5">
+                                        <i class="fa-solid fa-trash-can"></i> Sil
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center py-12 text-slate-500">
+                                <i class="fa-solid fa-users-slash text-3xl mb-3 block"></i>
+                                Sisteme henüz kayıtlı herhangi bir kullanıcı bulunamadı.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-auto py-6 border-t border-white/5 text-center text-xs text-slate-500">
+        <p>&copy; 2026 Guester. Tüm Hakları Saklıdır.</p>
+    </footer>
+
+    <!-- ========================================== -->
+    <!--           MODALS (KUTUCUKLAR)              -->
+    <!-- ========================================== -->
+
+    <!-- Edit User Modal -->
+    <div id="editModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass w-full max-w-lg rounded-2xl overflow-hidden shadow-2xl relative">
+            <div class="px-6 py-4 border-b border-white/5 flex items-center justify-between bg-slate-800/40">
+                <h3 class="font-bold text-lg text-white"><i class="fa-solid fa-user-pen text-purple-400 mr-2"></i> Kullanıcı Düzenle</h3>
+                <button onclick="closeEditModal()" class="text-slate-400 hover:text-white transition-all text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <form action="/super_admin/kullanici_guncelle" method="POST" class="p-6 space-y-4">
+                <input type="hidden" name="user_id" id="edit_user_id">
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5" for="edit_ad_soyad">Adı Soyadı</label>
+                    <input type="text" name="ad_soyad" id="edit_ad_soyad" required
+                        class="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3.5 py-2 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5" for="edit_isletme_adi">İşletme Adı</label>
+                    <input type="text" name="isletme_adi" id="edit_isletme_adi"
+                        class="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3.5 py-2 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5" for="edit_email">E-posta</label>
+                    <input type="email" name="email" id="edit_email" required
+                        class="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3.5 py-2 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5" for="edit_sifre">Şifre</label>
+                    <input type="text" name="sifre" id="edit_sifre" required
+                        class="w-full bg-slate-900/60 border border-slate-700 rounded-lg px-3.5 py-2 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 transition-all text-sm">
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-white/5 mt-6">
+                    <button type="button" onclick="closeEditModal()" class="bg-slate-800 hover:bg-slate-750 text-slate-300 text-sm font-medium px-5 py-2 rounded-lg border border-white/5 transition-all">Vazgeç</button>
+                    <button type="submit" class="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-sm font-medium px-5 py-2 rounded-lg transition-all shadow-lg active:scale-[0.98]">Değişiklikleri Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Delete User Modal -->
+    <div id="deleteModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="glass w-full max-w-md rounded-2xl overflow-hidden shadow-2xl relative border-red-500/20">
+            <div class="px-6 py-4 border-b border-white/5 flex items-center justify-between bg-red-500/5">
+                <h3 class="font-bold text-lg text-red-400"><i class="fa-solid fa-triangle-exclamation mr-2"></i> Hesabı Sil</h3>
+                <button onclick="closeDeleteModal()" class="text-slate-400 hover:text-white transition-all text-xl"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="p-6">
+                <p class="text-sm text-slate-300 leading-relaxed mb-6">
+                    <span id="delete_user_name" class="font-semibold text-white"></span> isimli kullanıcının hesabını kalıcı olarak silmek istediğinizden emin misiniz?
+                </p>
+                <div class="bg-red-500/10 border border-red-500/25 rounded-xl p-3 mb-6 flex items-start gap-2.5 text-xs text-red-300">
+                    <i class="fa-solid fa-circle-exclamation text-sm mt-0.5"></i>
+                    <div>
+                        <span class="font-semibold block mb-0.5">Geri Dönülemez İşlem!</span>
+                        Bu işlem bu kullanıcıya ait oluşturulmuş tüm etkinlik davetiyelerini ve kayıtlı davetli listelerini de tamamen silecektir.
+                    </div>
+                </div>
+
+                <form id="deleteForm" method="POST" class="flex items-center justify-end gap-3 border-t border-white/5 pt-4">
+                    <button type="button" onclick="closeDeleteModal()" class="bg-slate-800 hover:bg-slate-750 text-slate-300 text-sm font-medium px-5 py-2 rounded-lg border border-white/5 transition-all">Vazgeç</button>
+                    <button type="submit" class="bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-5 py-2 rounded-lg transition-all shadow-lg active:scale-[0.98]">Evet, Hesabı ve Tüm Verileri Sil</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Functions -->
+    <script>
+        // Tab kapatıldığında otomatik çıkış yapma mekanizması (sessionStorage)
+        {% if not login_mod %}
+            if (!sessionStorage.getItem("admin_session_active")) {
+                window.location.href = "/super_admin/logout";
+            }
+        {% endif %}
+
+        function openEditModal(id, name, email, business, password) {
+            document.getElementById('edit_user_id').value = id;
+            document.getElementById('edit_ad_soyad').value = name;
+            document.getElementById('edit_email').value = email;
+            document.getElementById('edit_isletme_adi').value = business === 'None' ? '' : business;
+            document.getElementById('edit_sifre').value = password;
+            
+            const modal = document.getElementById('editModal');
+            modal.classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById('editModal');
+            modal.classList.add('hidden');
+        }
+
+        function openDeleteModal(id, name) {
+            document.getElementById('delete_user_name').innerText = name;
+            document.getElementById('deleteForm').action = '/super_admin/kullanici_sil/' + id;
+            
+            const modal = document.getElementById('deleteModal');
+            modal.classList.remove('hidden');
+        }
+
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if(e.target === this) closeEditModal();
+        });
+        document.getElementById('deleteModal').addEventListener('click', function(e) {
+            if(e.target === this) closeDeleteModal();
+        });
+
+        function closeDeleteModal() {
+            const modal = document.getElementById('deleteModal');
+            modal.classList.add('hidden');
+        }
+    </script>
+    {% endif %}
+
+</body>
+</html>

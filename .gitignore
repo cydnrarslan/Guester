@@ -1,0 +1,45 @@
+# Virtual Environment (Sanal Ortam)
+venv/
+ENV/
+env/
+
+# Python Cache (Önbellek)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Hassas Bilgiler (Credentials / Local Settings)
+.env
+*.pem
+*.key
+
+# Veritabanı Dosyaları
+*.db
+*.sqlite3
+
+# Yüklemeler ve Geçici Çıktılar
+uploads/
+debug_grid_crops/
+*.log
+hata.txt
+db_dump.txt
+raw_words.txt
+tunnel_url.txt
+bg_error.log
+
+# Geçici Arşivler ve Çalıştırılabilir Dosyalar
+*.zip
+*.exe
+cloudflared.exe
+
+# IDE ve Editör Ayarları
+.vscode/
+.idea/
+*.swp
+*.py~
+
+# Test Dosyaları İzin Kuralları (Git takip etsin)
+!test_files/
+!test_files/*
+!.env.example
